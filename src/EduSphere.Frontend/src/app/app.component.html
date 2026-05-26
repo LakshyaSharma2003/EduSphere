@@ -1,28 +1,71 @@
-<main class="shell">
-  <aside class="sidebar">
-    <a class="brand" routerLink="/">
-      <span class="brand-mark">E</span>
-      <span>
-        <strong>EduSphere</strong>
-        <small>Engine v20</small>
-      </span>
-    </a>
-
-    <nav aria-label="Primary navigation">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Command Center</a>
-      <a routerLink="/modules" routerLinkActive="active">Module Matrix</a>
-    </nav>
-  </aside>
-
-  <section class="workspace">
-    <header class="topbar">
-      <div>
-        <p>Enterprise University ERP</p>
-        <h1>{{ headerLabel() }}</h1>
+@if (!api.activePersona()) {
+  <main class="login-screen">
+    <section class="login-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">EduSphere Engine v20</span>
+        <h1>Choose your university command role</h1>
+        <p>Enter as a student, teacher, or administrator and the workspace adapts with the actions, schedules, and records that role needs.</p>
       </div>
-      <button type="button">MFA Ready</button>
-    </header>
 
-    <router-outlet />
-  </section>
-</main>
+      <div class="role-grid" aria-label="Login role selection">
+        @for (persona of api.personas(); track persona.id) {
+          <button class="role-card" type="button" (click)="api.login(persona)" [style.--accent]="persona.accent">
+            <span class="avatar">{{ persona.avatar }}</span>
+            <small>{{ persona.role }}</small>
+            <strong>{{ persona.name }}</strong>
+            <em>{{ persona.title }}</em>
+            <span class="enter">Enter workspace</span>
+          </button>
+        }
+      </div>
+    </section>
+  </main>
+} @else {
+  <main class="shell">
+    <aside class="sidebar">
+      <a class="brand" routerLink="/">
+        <span class="brand-mark">E</span>
+        <span>
+          <strong>EduSphere</strong>
+          <small>Engine v20</small>
+        </span>
+      </a>
+
+      <div class="profile-chip">
+        <span>{{ api.activePersona()?.avatar }}</span>
+        <div>
+          <strong>{{ api.activePersona()?.name }}</strong>
+          <small>{{ api.activePersona()?.department }}</small>
+        </div>
+      </div>
+
+      <nav aria-label="Primary navigation">
+        @for (item of navigation(); track item.view) {
+          <button type="button" [class.active]="api.activeView() === item.view" (click)="api.setView(item.view)">
+            {{ item.label }}
+          </button>
+        }
+        <a routerLink="/modules" routerLinkActive="active">Module Matrix</a>
+      </nav>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p>Enterprise University ERP</p>
+          <h1>{{ headerLabel() }}</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="mode-pill">MFA Ready</span>
+          <button type="button" (click)="api.logout()">Switch role</button>
+        </div>
+      </header>
+
+      @if (api.toast()) {
+        <div class="toast">{{ api.toast() }}</div>
+      }
+
+      <router-outlet />
+    </section>
+  </main>
+}

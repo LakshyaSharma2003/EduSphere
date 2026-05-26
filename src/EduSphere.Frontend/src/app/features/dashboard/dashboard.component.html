@@ -1,85 +1,217 @@
-<section class="status-strip">
-  <div>
-    <span [class.live]="api.apiStatus() === 'live'"></span>
-    API mode: {{ api.apiStatus() }}
-  </div>
-  <strong>{{ api.totalRiskCount() }} active risk signals</strong>
-</section>
+@if (persona(); as user) {
+  <section class="hero-panel">
+    <div>
+      <span>{{ user.role }} workspace</span>
+      <h2>Welcome back, {{ user.name }}</h2>
+      <p>
+        @if (user.role === 'student') {
+          Your classes, attendance, course bidding, fee status, and campus services are ready.
+        } @else if (user.role === 'teacher') {
+          Manage teaching slots, open attendance, review student risk, and coordinate academic actions.
+        } @else {
+          Monitor university operations, finance exposure, scheduling, people, and campus service queues.
+        }
+      </p>
+    </div>
+    <button type="button" (click)="api.setView('schedule')">View live schedule</button>
+  </section>
 
-<section class="metrics" aria-label="University operational metrics">
-  @for (metric of metrics(); track metric.label) {
-    <article class="metric" [class]="metric.tone">
-      <p>{{ metric.label }}</p>
-      <strong>{{ metric.value | number }}</strong>
-    </article>
-  }
-  <article class="metric red">
-    <p>Outstanding dues</p>
-    <strong>{{ api.dashboard().outstandingDues | currency: 'INR':'symbol':'1.0-0' }}</strong>
-  </article>
-</section>
+  <section class="metrics" aria-label="Role metrics">
+    @for (stat of quickStats(); track stat.label) {
+      <article class="metric" [class]="stat.tone">
+        <p>{{ stat.label }}</p>
+        <strong>{{ stat.value }}</strong>
+      </article>
+    }
+  </section>
 
-<section class="grid">
-  <article class="panel">
-    <header>
-      <h2>Academic SLA Warnings</h2>
-      <span>75% baseline</span>
-    </header>
+  @if (api.activeView() === 'overview') {
+    <section class="dashboard-grid">
+      <article class="panel spotlight">
+        <header>
+          <h2>Next Up</h2>
+          <span>{{ api.schedule()[0].status }}</span>
+        </header>
+        <strong>{{ api.schedule()[0].courseTitle }}</strong>
+        <p>{{ api.schedule()[0].time }} in {{ api.schedule()[0].room }}</p>
+        <div class="actions">
+          @if (user.role === 'teacher') {
+            <button type="button" (click)="api.markAttendance(api.schedule()[0].id)">Open attendance</button>
+          } @else {
+            <button type="button" (click)="api.setView('schedule')">Open timetable</button>
+          }
+          <button class="ghost" type="button" (click)="api.setView('courses')">Course center</button>
+        </div>
+      </article>
 
-    @if (api.attendanceAlerts().length) {
-      <div class="alert-list">
-        @for (alert of api.attendanceAlerts(); track alert.studentId + alert.courseCode) {
-          <div class="alert-row">
-            <div>
-              <strong>{{ alert.studentId }}</strong>
-              <p>{{ alert.courseCode }} · {{ alert.lastUpdated | date: 'short' }}</p>
-            </div>
-            <span>{{ alert.percentage }}%</span>
+      <article class="panel">
+        <header>
+          <h2>Priority Signals</h2>
+          <span>{{ api.totalRiskCount() }} active</span>
+        </header>
+        <div class="signal-list">
+          <div>
+            <strong>Attendance baseline</strong>
+            <p>{{ api.attendanceAlerts().length }} student record below 75 percent.</p>
           </div>
+          <div>
+            <strong>Timetable worker</strong>
+            <p>Constraint checks ready for room and faculty collision review.</p>
+          </div>
+          <div>
+            <strong>Finance ledger</strong>
+            <p>{{ api.dashboard().outstandingDues | currency: 'INR':'symbol':'1.0-0' }} outstanding across sample ledgers.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  }
+
+  @if (api.activeView() === 'schedule') {
+    <section class="panel">
+      <header>
+        <h2>
+          @if (user.role === 'admin') {
+            Master Schedule
+          } @else if (user.role === 'teacher') {
+            Teaching Schedule
+          } @else {
+            My Timetable
+          }
+        </h2>
+        <span>Reactive weekly view</span>
+      </header>
+      <div class="schedule-board">
+        @for (slot of api.schedule(); track slot.id) {
+          <article class="schedule-card" [class.live]="slot.status === 'Live'">
+            <div class="day">{{ slot.day }}</div>
+            <div>
+              <small>{{ slot.time }}</small>
+              <strong>{{ slot.courseCode }} - {{ slot.courseTitle }}</strong>
+              <p>{{ slot.room }} / {{ slot.faculty }}</p>
+            </div>
+            <span>{{ slot.status }}</span>
+            @if (user.role === 'teacher') {
+              <button type="button" (click)="api.markAttendance(slot.id)">Attendance</button>
+            }
+          </article>
         }
       </div>
-    } @else {
-      <p class="empty">No attendance alerts are currently active.</p>
-    }
-  </article>
-
-  <article class="panel">
-    <header>
-      <h2>Operational Queues</h2>
-      <span>worker-ready</span>
-    </header>
-    <div class="queue-list">
-      <div>
-        <strong>Timetable Solver</strong>
-        <p>Constraint checks for rooms, faculty, and sections.</p>
-      </div>
-      <div>
-        <strong>Invoice Processor</strong>
-        <p>Credit-hour dues, hostel charges, and library fines.</p>
-      </div>
-      <div>
-        <strong>Plagiarism Scanner</strong>
-        <p>Upload pipeline prepared for async similarity scoring.</p>
-      </div>
-    </div>
-  </article>
-</section>
-
-<section class="panel timeline">
-  <header>
-    <h2>Audit Trail</h2>
-    <span>{{ api.auditEvents().length }} events</span>
-  </header>
-
-  @if (api.auditEvents().length) {
-    @for (event of api.auditEvents(); track event.id) {
-      <div class="timeline-item">
-        <strong>{{ event.action }}</strong>
-        <p>{{ event.payloadSummary }}</p>
-        <small>{{ event.actorId }} · {{ event.timestamp | date: 'medium' }}</small>
-      </div>
-    }
-  } @else {
-    <p class="empty">No write events yet. Course bids and bed reservations will appear here.</p>
+    </section>
   }
-</section>
+
+  @if (api.activeView() === 'courses') {
+    <section class="course-layout">
+      <article class="panel">
+        <header>
+          <h2>
+            @if (user.role === 'student') {
+              Course Bidding
+            } @else {
+              Academic Catalog
+            }
+          </h2>
+          <span>{{ api.courses().length }} courses</span>
+        </header>
+        <div class="course-grid">
+          @for (course of api.courses(); track course.code) {
+            <article class="course-card">
+              <div class="course-head">
+                <span>{{ course.category }}</span>
+                <strong>{{ course.code }}</strong>
+              </div>
+              <h3>{{ course.title }}</h3>
+              <p>{{ course.faculty }} / {{ course.credits }} credits / {{ course.seatsLeft }} seats left</p>
+              <div class="progress"><span [style.width.%]="course.progress"></span></div>
+              @if (user.role === 'student') {
+                @if (course.enrolled) {
+                  <button class="ghost" type="button" (click)="api.drop(course.code)">Drop course</button>
+                } @else {
+                  <button type="button" (click)="api.enroll(course.code)">Bid seat</button>
+                }
+              } @else if (user.role === 'teacher') {
+                <button type="button" (click)="api.setView('people')">View roster</button>
+              } @else {
+                <button type="button">Audit capacity</button>
+              }
+            </article>
+          }
+        </div>
+      </article>
+    </section>
+  }
+
+  @if (api.activeView() === 'people') {
+    <section class="panel">
+      <header>
+        <h2>People And Performance</h2>
+        <span>role governed</span>
+      </header>
+      <div class="people-grid">
+        <article>
+          <strong>STU-1001 / Aarav Mehta</strong>
+          <p>CGPA 8.72 / attendance stable / no backlogs</p>
+          <button type="button">Open profile</button>
+        </article>
+        <article>
+          <strong>STU-1002 / Nisha Rao</strong>
+          <p>CGPA 7.91 / attendance warning / one active backlog</p>
+          <button type="button">Send alert</button>
+        </article>
+        <article>
+          <strong>FAC-2001 / Dr. Kavya Iyer</strong>
+          <p>4 active sections / 2 assessments due / timetable owner</p>
+          <button type="button">Review load</button>
+        </article>
+      </div>
+    </section>
+  }
+
+  @if (api.activeView() === 'finance') {
+    <section class="finance-grid">
+      <article class="panel">
+        <header>
+          <h2>Ledger Summary</h2>
+          <span>closed loop</span>
+        </header>
+        <div class="ledger-total">{{ api.dashboard().outstandingDues | currency: 'INR':'symbol':'1.0-0' }}</div>
+        <p class="muted">Outstanding dues from tuition, hostel, and library fine ledgers.</p>
+        <button type="button">Generate invoice</button>
+      </article>
+      <article class="panel wallet">
+        <header>
+          <h2>Campus Wallet</h2>
+          <span>token ready</span>
+        </header>
+        <strong>Rs 2,400</strong>
+        <p>Temporary payment token can be presented at cafeteria and campus store terminals.</p>
+        <button class="ghost" type="button">Show wallet token</button>
+      </article>
+    </section>
+  }
+
+  @if (api.activeView() === 'campus') {
+    <section class="panel">
+      <header>
+        <h2>Campus Operations</h2>
+        <span>{{ api.campusRequests().length }} live tickets</span>
+      </header>
+      <div class="ticket-list">
+        @for (request of api.campusRequests(); track request.id) {
+          <article>
+            <span>{{ request.id }}</span>
+            <div>
+              <strong>{{ request.label }}</strong>
+              <p>{{ request.owner }} / {{ request.status }} / ETA {{ request.eta }}</p>
+            </div>
+            @if (user.role === 'admin') {
+              <button type="button" (click)="api.approveCampusRequest(request.id)">Approve</button>
+            } @else {
+              <button class="ghost" type="button">Track</button>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+}

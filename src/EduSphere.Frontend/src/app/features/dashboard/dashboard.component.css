@@ -1,42 +1,83 @@
-.status-strip {
+:host {
+  display: block;
+}
+
+.hero-panel {
   align-items: center;
-  background: #fff;
-  border: 1px solid var(--line);
+  animation: riseIn 260ms ease both;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.96), rgba(234, 247, 255, 0.9)),
+    url("https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1400&q=80");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(192, 211, 226, 0.8);
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
-  padding: 12px 14px;
+  min-height: 210px;
+  overflow: hidden;
+  padding: 28px;
 }
 
-.status-strip div {
-  align-items: center;
+.hero-panel span,
+.panel header span {
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.hero-panel h2 {
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1;
+  margin: 8px 0 12px;
+}
+
+.hero-panel p {
   color: var(--muted);
-  display: flex;
-  gap: 8px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 680px;
 }
 
-.status-strip span {
-  background: var(--amber);
-  border-radius: 999px;
-  display: inline-flex;
-  height: 10px;
-  width: 10px;
+button {
+  background: #102033;
+  border: 1px solid #102033;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 10px 14px;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
-.status-strip span.live {
-  background: var(--green);
+button:hover {
+  box-shadow: 0 12px 24px rgba(16, 32, 51, 0.18);
+  transform: translateY(-2px);
+}
+
+button.ghost {
+  background: #fff;
+  color: #102033;
 }
 
 .metrics {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   margin-bottom: 16px;
 }
 
 .metric {
+  animation: riseIn 260ms ease both;
   padding: 18px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.metric:hover {
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
 }
 
 .metric p {
@@ -46,7 +87,7 @@
 
 .metric strong {
   display: block;
-  font-size: 28px;
+  font-size: 30px;
   line-height: 1.1;
 }
 
@@ -66,14 +107,15 @@
   border-top: 4px solid var(--red);
 }
 
-.grid {
+.dashboard-grid,
+.finance-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  margin-bottom: 16px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
 }
 
 .panel {
+  animation: riseIn 260ms ease both;
   padding: 18px;
 }
 
@@ -85,59 +127,206 @@
 }
 
 .panel h2 {
-  font-size: 18px;
+  font-size: 19px;
   margin: 0;
 }
 
-.panel header span {
-  color: var(--muted);
-  font-size: 14px;
+.spotlight {
+  background: linear-gradient(135deg, #ffffff, #eef8f4);
 }
 
-.alert-list,
-.queue-list,
-.timeline {
+.spotlight > strong {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.spotlight p,
+.muted {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.signal-list,
+.schedule-board,
+.course-grid,
+.people-grid,
+.ticket-list {
   display: grid;
   gap: 12px;
 }
 
-.alert-row,
-.queue-list div,
-.timeline-item {
+.signal-list div,
+.schedule-card,
+.course-card,
+.people-grid article,
+.ticket-list article {
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 12px;
+  padding: 14px;
 }
 
-.alert-row {
+.signal-list p,
+.schedule-card p,
+.course-card p,
+.people-grid p,
+.ticket-list p,
+.wallet p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 5px 0 0;
+}
+
+.schedule-card {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 56px minmax(0, 1fr) 88px auto;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.schedule-card:hover {
+  border-color: #9bc7f7;
+  transform: translateX(4px);
+}
+
+.schedule-card.live {
+  background: linear-gradient(90deg, #ecfff6, #fff);
+}
+
+.day {
+  align-items: center;
+  background: #eef6ff;
+  border-radius: 8px;
+  color: var(--blue);
+  display: inline-flex;
+  font-weight: 900;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.schedule-card small {
+  color: var(--muted);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.schedule-card > span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-weight: 800;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+.course-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.course-card {
+  display: grid;
+  gap: 10px;
+}
+
+.course-head {
   align-items: center;
   display: flex;
   justify-content: space-between;
 }
 
-.alert-row p,
-.queue-list p,
-.timeline-item p,
-.empty {
-  color: var(--muted);
-  margin: 4px 0 0;
+.course-head span {
+  color: var(--green);
+  font-weight: 800;
 }
 
-.alert-row span {
-  color: var(--red);
-  font-weight: 800;
+.course-card h3 {
+  margin: 0;
+}
+
+.progress {
+  background: #e6edf3;
+  border-radius: 999px;
+  height: 9px;
+  overflow: hidden;
+}
+
+.progress span {
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  display: block;
+  height: 100%;
+}
+
+.people-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.ledger-total,
+.wallet strong {
+  display: block;
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.ticket-list article {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+}
+
+.ticket-list article > span {
+  background: #f4f6f8;
+  border-radius: 8px;
+  color: var(--blue);
+  font-weight: 900;
+  padding: 10px;
+  text-align: center;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 1100px) {
   .metrics,
-  .grid {
+  .dashboard-grid,
+  .finance-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 720px) {
+  .hero-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .metrics,
-  .grid {
+  .dashboard-grid,
+  .finance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-card,
+  .ticket-list article {
     grid-template-columns: 1fr;
   }
 }
