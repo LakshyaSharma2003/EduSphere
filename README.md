@@ -48,7 +48,18 @@ npm install
 npm start
 ```
 
-The Angular app expects the backend at `https://localhost:7221` or `http://localhost:5221`.
+The Angular app expects the backend at `http://localhost:5221`.
+
+## One-Click VS Code Run
+
+Open `D:\EduSphere` in VS Code, go to **Run and Debug**, choose **Run EduSphere Full Stack**, and press the green run button.
+
+This runs `run-dev.ps1`, which starts:
+
+- Backend API: `http://localhost:5221`
+- Angular frontend: `http://localhost:4200`
+
+If the .NET SDK is not installed yet, the launcher starts the frontend and prints a clear backend warning.
 
 ## Current Scope
 

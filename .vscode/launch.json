@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run EduSphere Full Stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\run-dev.ps1",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
