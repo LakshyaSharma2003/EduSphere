@@ -1,0 +1,85 @@
+<section class="status-strip">
+  <div>
+    <span [class.live]="api.apiStatus() === 'live'"></span>
+    API mode: {{ api.apiStatus() }}
+  </div>
+  <strong>{{ api.totalRiskCount() }} active risk signals</strong>
+</section>
+
+<section class="metrics" aria-label="University operational metrics">
+  @for (metric of metrics(); track metric.label) {
+    <article class="metric" [class]="metric.tone">
+      <p>{{ metric.label }}</p>
+      <strong>{{ metric.value | number }}</strong>
+    </article>
+  }
+  <article class="metric red">
+    <p>Outstanding dues</p>
+    <strong>{{ api.dashboard().outstandingDues | currency: 'INR':'symbol':'1.0-0' }}</strong>
+  </article>
+</section>
+
+<section class="grid">
+  <article class="panel">
+    <header>
+      <h2>Academic SLA Warnings</h2>
+      <span>75% baseline</span>
+    </header>
+
+    @if (api.attendanceAlerts().length) {
+      <div class="alert-list">
+        @for (alert of api.attendanceAlerts(); track alert.studentId + alert.courseCode) {
+          <div class="alert-row">
+            <div>
+              <strong>{{ alert.studentId }}</strong>
+              <p>{{ alert.courseCode }} · {{ alert.lastUpdated | date: 'short' }}</p>
+            </div>
+            <span>{{ alert.percentage }}%</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="empty">No attendance alerts are currently active.</p>
+    }
+  </article>
+
+  <article class="panel">
+    <header>
+      <h2>Operational Queues</h2>
+      <span>worker-ready</span>
+    </header>
+    <div class="queue-list">
+      <div>
+        <strong>Timetable Solver</strong>
+        <p>Constraint checks for rooms, faculty, and sections.</p>
+      </div>
+      <div>
+        <strong>Invoice Processor</strong>
+        <p>Credit-hour dues, hostel charges, and library fines.</p>
+      </div>
+      <div>
+        <strong>Plagiarism Scanner</strong>
+        <p>Upload pipeline prepared for async similarity scoring.</p>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="panel timeline">
+  <header>
+    <h2>Audit Trail</h2>
+    <span>{{ api.auditEvents().length }} events</span>
+  </header>
+
+  @if (api.auditEvents().length) {
+    @for (event of api.auditEvents(); track event.id) {
+      <div class="timeline-item">
+        <strong>{{ event.action }}</strong>
+        <p>{{ event.payloadSummary }}</p>
+        <small>{{ event.actorId }} · {{ event.timestamp | date: 'medium' }}</small>
+      </div>
+    }
+  } @else {
+    <p class="empty">No write events yet. Course bids and bed reservations will appear here.</p>
+  }
+</section>

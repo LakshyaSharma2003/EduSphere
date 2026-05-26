@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/EduSphere.Backend/EduSphere.Backend.csproj" />
+  <Project Path="tests/EduSphere.Backend.Tests/EduSphere.Backend.Tests.csproj" />
+</Solution>

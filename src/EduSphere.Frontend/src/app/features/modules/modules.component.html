@@ -1,0 +1,26 @@
+<section class="module-summary">
+  @for (category of categories(); track category.name) {
+    <article>
+      <strong>{{ category.count }}</strong>
+      <span>{{ category.name }}</span>
+    </article>
+  }
+</section>
+
+<section class="module-grid" aria-label="EduSphere functional module matrix">
+  @for (module of api.modules(); track module.name) {
+    <article class="module-card">
+      <header>
+        <span>{{ module.category }}</span>
+        <strong>{{ module.status }}</strong>
+      </header>
+      <h2>{{ module.name }}</h2>
+      <p>{{ module.description }}</p>
+      <div class="capabilities">
+        @for (capability of module.capabilities; track capability) {
+          <span>{{ capability }}</span>
+        }
+      </div>
+    </article>
+  }
+</section>

@@ -1,0 +1,28 @@
+<main class="shell">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/">
+      <span class="brand-mark">E</span>
+      <span>
+        <strong>EduSphere</strong>
+        <small>Engine v20</small>
+      </span>
+    </a>
+
+    <nav aria-label="Primary navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Command Center</a>
+      <a routerLink="/modules" routerLinkActive="active">Module Matrix</a>
+    </nav>
+  </aside>
+
+  <section class="workspace">
+    <header class="topbar">
+      <div>
+        <p>Enterprise University ERP</p>
+        <h1>{{ headerLabel() }}</h1>
+      </div>
+      <button type="button">MFA Ready</button>
+    </header>
+
+    <router-outlet />
+  </section>
+</main>
